@@ -1,24 +1,23 @@
 #!/bin/bash
 
-# Source directory relative to the current directory
-source_dir="./files"
+# Set the base directory to the root directory.
+BASE_DIR="./"
 
-# Target directory set to the current directory
-target_dir="./"
+# Change directory to the 'files' folder located in the root directory.
+cd "${BASE_DIR}files" || exit
 
-# Iterate over each item in the source directory
-for item in "$source_dir"/*; do
-    # Check if the item is a directory
-    if [ -d "$item" ]; then
-        # Extract the name of the directory
-        dir_name=$(basename "$item")
-        # Ensure the target directory exists
-        mkdir -p "$target_dir/$dir_name"
-        # Use rsync to merge contents
-        rsync -av --remove-source-files "$item"/ "$target_dir/$dir_name"
-        # Remove the source directory if it is empty
-        find "$item" -type d -empty -delete
-    fi
+# Iterate through each file in the 'files' directory.
+for file in *; do
+  if [ -f "$file" ]; then # Check if it is a regular file (not a directory).
+    # Extract the first letter of the filename, convert it to lowercase.
+    first_letter=$(echo "$file" | cut -c1 | tr '[:upper:]' '[:lower:]')
+
+    # Construct the path to the target directory.
+    target_dir="../${first_letter}"
+
+    # Move the file to the target directory.
+    mv "$file" "$target_dir/"
+  fi
 done
 
-echo "All folders have been merged from $source_dir to $target_dir."
+echo "Files have been moved to their respective directories."
