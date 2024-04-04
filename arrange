@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Source directory relative to the current directory
+source_dir="./files"
+
+# Target directory set to the current directory
+target_dir="./"
+
+# Iterate over each item in the source directory
+for item in "$source_dir"/*; do
+    # Check if the item is a directory
+    if [ -d "$item" ]; then
+        # Extract the name of the directory
+        dir_name=$(basename "$item")
+        # Ensure the target directory exists
+        mkdir -p "$target_dir/$dir_name"
+        # Use rsync to merge contents
+        rsync -av --remove-source-files "$item"/ "$target_dir/$dir_name"
+        # Remove the source directory if it is empty
+        find "$item" -type d -empty -delete
+    fi
+done
+
+echo "All folders have been merged from $source_dir to $target_dir."
